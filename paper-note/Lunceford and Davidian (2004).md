@@ -206,13 +206,43 @@ $$
 - $\eta_1=\mu_1$: the summand is $Z_iY_i/e_i-\mu_1$, so $\mu_1=n^{-1}\sum_iZ_iY_i/e_i$, i.e. **IPW1**.
 - Any $\eta_1$ gives a valid equation, because the added term has mean zero: $E\{(Z-e)/e\}=E\{E(Z-e\mid X)/e\}=0$.
 
-**Choosing $\eta_1$.** With $e$ known, the summand $\phi$ has derivative $-E(Z/e)=-1$ in $\mu_1$, so the asymptotic variance of $\hat\mu_1$ is $E(\phi^2)$. This is a least-squares problem in $\eta_1$ with solution
+**Estimating function vs. influence function.** Write the summand as $\psi(O;\mu_1)=\frac{Z(Y-\mu_1)}{e(X)}+\eta_1\frac{Z-e(X)}{e(X)}$ with $O=(Y,Z,X)$.
+
+- $\psi$ is an *unbiased estimating function*: $E\,\psi(O;\mu_1)=0$ at the true $\mu_1$, and $\hat\mu_1$ solves $\sum_i\psi(O_i;\mu_1)=0$.
+- By M-estimation theory, $\sqrt n(\hat\mu_1-\mu_1)=n^{-1/2}\sum_i\mathrm{IF}(O_i)+o_p(1)$ with $\mathrm{IF}(O)=-\{E\,\partial\psi/\partial\mu_1\}^{-1}\psi(O;\mu_1)$. Here $E\,\partial\psi/\partial\mu_1=-E\{Z/e(X)\}=-1$, so **with $e$ known, $\psi$ is the influence function** of $\hat\mu_1$, and the asymptotic variance is $E(\psi^2)$.
+- With $e$ estimated by $\hat{\boldsymbol\beta}$, the influence function is $\psi$ minus its projection on the logistic score $S_\beta=(Z-e)X$:
+  $$
+  \mathrm{IF}=\psi-E(\psi S_\beta^\top)\{E(S_\beta S_\beta^\top)\}^{-1}S_\beta ,
+  $$
+  so estimating the propensity score never increases (and usually reduces) the variance. This correction is worked out in Section 3 of the paper.
+
+**Where the family comes from (Robins, Rotnitzky and Zhao, 1994).**
+
+1. *Start from an unbiased IPW estimating function.* The key identity gives $E\{Z(Y-\mu_1)/e(X)\}=0$; solving it is IPW2.
+2. *Add any mean-zero term.* A function of $(Z,X)$ with conditional mean zero given $X$ can be added without bias. Because $Z$ is binary, every such function has the form $\{Z-e(X)\}h(X)$: this is the *augmentation space*. Under no unmeasured confounders (missing at random) with $e$ known, every regular asymptotically linear estimator of $\mu_1$ has influence function
+   $$
+   \frac{Z(Y-\mu_1)}{e(X)}+\{Z-e(X)\}\,h(X)\qquad\text{for some } h .
+   $$
+3. *Lunceford and Davidian restrict $h$.* Taking $h(X)=\eta_1/e(X)$ gives the one-parameter family above: $\eta_1=0$ is IPW2, $\eta_1=\mu_1$ is IPW1, and the variance-minimizing $\eta_1^*$ (below) is IPW3.
+4. *The unrestricted optimum is the doubly robust estimator.* Minimizing the variance over all $h$ gives $h^*(X)=-\{m_1(X)-\mu_1\}/e(X)$ with $m_1(X)=E(Y_1\mid X)$, and
+   $$
+   \frac{Z(Y-\mu_1)}{e}-\frac{(Z-e)\{m_1(X)-\mu_1\}}{e}=\frac{ZY-(Z-e)\,m_1(X)}{e}-\mu_1 ,
+   $$
+   which is the treated part of $\hat\Delta_{DR}$ (Section 4.5). IPW1–IPW3 and DR therefore belong to one class; DR uses the best $h$, which is why it is locally efficient.
+
+**Choosing $\eta_1$.** With $e$ known, the asymptotic variance of $\hat\mu_1$ is $E(\psi^2)$. This is a least-squares problem in $\eta_1$ with solution
 
 $$
 \eta_1^*=-\frac{E\{Z(Y-\mu_1)(Z-e)/e^2\}}{E\{(Z-e)^2/e^2\}}=-\frac{E\{Z(Y-\mu_1)/e^2\}}{E\{(Z-e)^2/e^2\}},
 $$
 
 where the second form (the one in the paper) uses $Z(Z-e)=Z(1-e)$ and $E\{Z(Y-\mu_1)/e\}=E(Y_1-\mu_1)=0$. The control side gives $\eta_0^*$ in the same way.
+
+*Intuition: a control variate.* The added term $(Z-e)/e$ has known mean zero and is correlated with $Z(Y-\mu_1)/e$; subtracting the right multiple of it removes noise without changing the mean, as with a control variate in Monte Carlo integration. Hence $\eta_1^*$ is a regression coefficient:
+
+$$
+\eta_1^*=-\frac{\mathrm{Cov}\{Z(Y-\mu_1)/e,\ (Z-e)/e\}}{\mathrm{Var}\{(Z-e)/e\}} .
+$$
 
 **Closed form.** Substituting the sample version of $\eta_1^*$, with $a_i=(Z_i-\hat e_i)/\hat e_i$, the equation becomes
 
