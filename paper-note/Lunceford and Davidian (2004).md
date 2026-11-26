@@ -259,7 +259,70 @@ $$
 C_0=-\frac{\sum_i(Z_i-\hat e_i)/(1-\hat e_i)}{\sum_i\{(Z_i-\hat e_i)/(1-\hat e_i)\}^2}.
 $$
 
-**Remark.** Since $E(a)=0$, $C_1\to_p0$ and the weights converge to the IPW2 weights. But $C_1=O_p(n^{-1/2})$ multiplies a sum of order $n$, so the correction changes the variance on the $\sqrt n$ scale: IPW3 is asymptotically at least as efficient as IPW1 and IPW2 within this family. In small samples $C_1,C_0$ also stabilize the weights when some $\hat e_i$ are extreme.
+**Remark.** Since $E(a)=0$, $C_1\to_p0$ and the weights converge to the IPW2 weights. But $C_1=O_p(n^{-1/2})$ multiplies a sum of order $n$, so the correction changes the variance on the $\sqrt n$ scale: IPW3 is asymptotically at least as efficient as IPW1 and IPW2 within this family. In small samples $C_1,C_0$ also stabilize the weights when some $\hat e_i$ are extreme. The details follow (write $e_i$ for $\hat e_i$).
+
+**(i) Where the closed form comes from.**
+
+*The sample version of $\eta_1^*$.* It is obtained by the plug-in principle: replace each expectation $E(\cdot)$ by the sample average $\frac1n\sum_{i=1}^n(\cdot)$, and the true $e(X_i)$ by $\hat e_i=e(X_i;\hat{\boldsymbol\beta})$. From
+
+$$
+\eta_1^*=-\frac{E\{Z(Y-\mu_1)/e(X)^2\}}{E\{(Z-e(X))^2/e(X)^2\}}
+$$
+
+this gives
+
+$$
+\hat\eta_1=-\frac{\frac1n\sum_{i=1}^nZ_i(Y_i-\mu_1)/\hat e_i^{\,2}}{\frac1n\sum_{i=1}^n(Z_i-\hat e_i)^2/\hat e_i^{\,2}}
+=-\frac{\sum_iZ_i(Y_i-\mu_1)/e_i^2}{\sum_ia_i^2},\qquad a_i=\frac{Z_i-e_i}{e_i},
+$$
+
+where the factors $\frac1n$ cancel.
+
+- *Numerator:* only treated units contribute (the term vanishes when $Z_i=0$): $\sum_{i:Z_i=1}(Y_i-\mu_1)/e_i^2$.
+- *Denominator:* a treated unit has $a_i=(1-e_i)/e_i$ and contributes $\{(1-e_i)/e_i\}^2$; a control has $a_i=-1$ and contributes $1$. So $\sum_ia_i^2=\sum_{i:Z_i=1}\{(1-e_i)/e_i\}^2+n_0$, with $n_0$ the number of controls.
+- *$\hat\eta_1$ still contains the unknown $\mu_1$.* It is not computed first and then plugged in: $\hat\eta_1$ and $\hat\mu_1$ are solved jointly, and because the equation stays linear in $\mu_1$ the joint solution has the closed form below.
+- *Which population form is plugged in matters.* The form $-E\{Z(Y-\mu_1)(Z-e)/e^2\}/E\{(Z-e)^2/e^2\}$ is equal in the population but gives a slightly different sample estimator. Only the plug-in of the paper's form leads exactly to the weights $(1-C_1/\hat e_i)$ with $C_1=\sum_ia_i/\sum_ia_i^2$.
+
+*Substituting* into $\sum_i\big[Z_i(Y_i-\mu_1)/e_i+\eta_1a_i\big]=0$ gives
+
+$$
+\sum_i\frac{Z_i(Y_i-\mu_1)}{e_i}-\underbrace{\frac{\sum_ia_i}{\sum_ia_i^2}}_{C_1}\sum_i\frac{Z_i(Y_i-\mu_1)}{e_i^2}=0
+\iff
+\sum_i\frac{Z_i(Y_i-\mu_1)}{e_i}\Big(1-\frac{C_1}{e_i}\Big)=0 .
+$$
+
+Although $\hat\eta_1$ depends on $\mu_1$, the equation is linear in $\mu_1$, and solving it gives the weighted mean in $\hat\Delta_{IPW,3}$. On the control side use $b_i=(Z_i-e_i)/(1-e_i)$, which also has mean zero. Since $(1-Z)(Z-e)=-(1-Z)e$ and $E\{(1-Z)(Y-\mu_0)/(1-e)\}=0$, the optimal coefficient is $\eta_0^*=E\{(1-Z)(Y-\mu_0)/(1-e)^2\}/E(b^2)$. The same substitution gives the factor $1-C_0/(1-e_i)$ with $C_0=-\sum_ib_i/\sum_ib_i^2$, which explains the minus sign in $C_0$.
+
+**(ii) Why $C_1\to_p0$ at rate $n^{-1/2}$.**
+
+$$
+C_1=\frac{n^{-1}\sum_ia_i}{n^{-1}\sum_ia_i^2}.
+$$
+
+The numerator has mean $E(a)=E\{E(Z-e\mid X)/e\}=0$, so it is $O_p(n^{-1/2})$ by the CLT. The denominator converges to $E(a^2)>0$ by the LLN. Hence $C_1=O_p(n^{-1/2})$, $1-C_1/e_i\to1$, and the weights approach the IPW2 weights $Z_i/e_i$.
+
+**(iii) Why the vanishing correction still changes the variance.** Multiply the estimating equation by $n^{-1/2}$:
+
+$$
+\underbrace{\frac{1}{\sqrt n}\sum_i\frac{Z_i(Y_i-\mu_1)}{e_i}}_{O_p(1)}
+-\underbrace{\sqrt n\,C_1}_{O_p(1)}\cdot\underbrace{\frac1n\sum_i\frac{Z_i(Y_i-\mu_1)}{e_i^2}}_{\to_p\,c\,=\,E\{Z(Y-\mu_1)/e^2\}}=0 .
+$$
+
+$C_1$ is small, but $\sqrt n\,C_1=n^{-1/2}\sum_ia_i/(n^{-1}\sum_ia_i^2)$ is of order 1, and it multiplies a term converging to a nonzero constant $c$. The correction is therefore of the same order as the IPW2 term. Linearizing (the derivative in $\mu_1$ tends to $-1$),
+
+$$
+\sqrt n(\hat\mu_1-\mu_1)=\frac{1}{\sqrt n}\sum_i\Big[\frac{Z_i(Y_i-\mu_1)}{e_i}+\underbrace{\Big(-\frac{c}{E(a^2)}\Big)}_{=\,\eta_1^*}a_i\Big]+o_p(1).
+$$
+
+IPW3 thus has the influence function of the oracle member of the family that uses the optimal $\eta_1^*$, with asymptotic variance $\min_{\eta_1}E\{(\phi_0+\eta_1a)^2\}$, $\phi_0=Z(Y-\mu_1)/e$. IPW2 ($\eta_1=0$) and IPW1 ($\eta_1=\mu_1$) are other values of $\eta_1$, so their variances are no smaller. The weights converge, but they differ from IPW2's by $O_p(n^{-1/2})$, the same order as the estimator's error, so the asymptotic distribution changes. This is the usual control-variate result: an estimated coefficient attains the same variance as the optimal one. The argument treats $e$ as known; with $e$ estimated, each influence function also has its projection on the propensity score's score subtracted, which the paper handles in Section 3.
+
+**(iv) Why it stabilizes the weights in small samples.** With $w_i=1/e_i$, the IPW3 treated weight is
+
+$$
+w_i(1-C_1w_i)=w_i-C_1w_i^2 .
+$$
+
+A treated unit with tiny $e_i$ has a huge $a_i=(1-e_i)/e_i$; such units dominate $\sum_ia_i$ and $\sum_ia_i^2$ and typically make $C_1>0$. The subtracted term $C_1w_i^2$ grows faster than $w_i$, so the largest weights, which are the ones that make IPW1 and IPW2 unstable, are shrunk most. If $C_1w_i>1$ a weight can even become negative, so extreme propensity scores still deserve inspection or trimming.
 
 ### 4.5 Doubly robust estimator
 
